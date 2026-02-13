@@ -1,103 +1,54 @@
-import type { PluggableList, Plugin } from "unified";
-import type { Root as MdastRoot } from "mdast";
-import type { Root as HastRoot, Element } from "hast";
-import type { VFile } from "vfile";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import { findAndReplace } from "mdast-util-find-and-replace";
+import rehypeCitation from "rehype-citation";
+import type { PluggableList } from "unified";
 import { visit } from "unist-util-visit";
 import type { QuartzTransformerPlugin, BuildCtx } from "@quartz-community/types";
-import type { ExampleTransformerOptions } from "./types";
 
-const defaultOptions: ExampleTransformerOptions = {
-  highlightToken: "==",
-  headingClass: "example-plugin-heading",
-  enableGfm: true,
-  addHeadingSlugs: true,
+export interface CitationsOptions {
+  bibliographyFile: string;
+  suppressBibliography: boolean;
+  linkCitations: boolean;
+  csl: string;
+}
+
+const defaultOptions: CitationsOptions = {
+  bibliographyFile: "./bibliography.bib",
+  suppressBibliography: false,
+  linkCitations: false,
+  csl: "apa",
 };
 
-const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const remarkHighlightToken = (token: string): Plugin<[], MdastRoot> => {
-  const escapedToken = escapeRegExp(token);
-  const pattern = new RegExp(`${escapedToken}([^\n]+?)${escapedToken}`, "g");
-  return () => (tree: MdastRoot, _file: VFile) => {
-    findAndReplace(tree, [
-      [
-        pattern,
-        (_match: string, value: string) => ({
-          type: "strong",
-          children: [{ type: "text", value }],
-        }),
-      ],
-    ]);
-  };
-};
-
-const rehypeHeadingClass = (className: string): Plugin<[], HastRoot> => {
-  return () => (tree: HastRoot, _file: VFile) => {
-    visit(tree, "element", (node: Element) => {
-      if (!/^h[1-6]$/.test(node.tagName)) {
-        return;
-      }
-
-      const existing = node.properties?.className;
-      const classes: string[] = Array.isArray(existing)
-        ? existing.filter((value): value is string => typeof value === "string")
-        : typeof existing === "string"
-          ? [existing]
-          : [];
-      node.properties = {
-        ...node.properties,
-        className: [...classes, className],
-      };
-    });
-  };
-};
-
-/**
- * Example transformer showing remark/rehype usage and resource injection.
- */
-export const ExampleTransformer: QuartzTransformerPlugin<Partial<ExampleTransformerOptions>> = (
-  userOptions?: Partial<ExampleTransformerOptions>,
-) => {
-  const options = { ...defaultOptions, ...userOptions };
+export const Citations: QuartzTransformerPlugin<Partial<CitationsOptions>> = (userOpts) => {
+  const opts = { ...defaultOptions, ...userOpts };
   return {
-    name: "ExampleTransformer",
-    textTransform(_ctx: BuildCtx, src: string) {
-      return src.endsWith("\n") ? src : `${src}\n`;
-    },
-    markdownPlugins(): PluggableList {
-      const plugins: PluggableList = [remarkHighlightToken(options.highlightToken)];
-      if (options.enableGfm) {
-        plugins.unshift(remarkGfm);
+    name: "Citations",
+    htmlPlugins(ctx: BuildCtx) {
+      const plugins: PluggableList = [];
+      let lang: string = "en-US";
+      if (ctx.cfg.configuration.locale !== "en-US") {
+        lang = `https://raw.githubusercontent.com/citation-style-language/locales/refs/heads/master/locales-${ctx.cfg.configuration.locale}.xml`;
       }
+      plugins.push([
+        rehypeCitation,
+        {
+          bibliography: opts.bibliographyFile,
+          suppressBibliography: opts.suppressBibliography,
+          linkCitations: opts.linkCitations,
+          csl: opts.csl,
+          lang,
+        },
+      ]);
+
+      plugins.push(() => {
+        return (tree, _file) => {
+          visit(tree, "element", (node, _index, _parent) => {
+            if (node.tagName === "a" && node.properties?.href?.startsWith("#bib")) {
+              node.properties["data-no-popover"] = true;
+            }
+          });
+        };
+      });
+
       return plugins;
-    },
-    htmlPlugins(): PluggableList {
-      const plugins: PluggableList = [rehypeHeadingClass(options.headingClass)];
-      if (options.addHeadingSlugs) {
-        plugins.unshift(rehypeSlug);
-      }
-      return plugins;
-    },
-    externalResources() {
-      return {
-        css: [
-          {
-            content: `.${options.headingClass} { letter-spacing: 0.02em; }`,
-            inline: true,
-          },
-        ],
-        js: [
-          {
-            contentType: "inline",
-            loadTime: "afterDOMReady",
-            script: "document.documentElement.dataset.exampleTransformer = 'true'",
-          },
-        ],
-        additionalHead: [],
-      };
     },
   };
 };
