@@ -77,5 +77,16 @@
   "engines": {
     "node": ">=22",
     "npm": ">=10.9.2"
+  },
+  "quartz": {
+    "name": "citations",
+    "displayName": "Citations",
+    "category": "transformer",
+    "version": "1.0.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 85,
+    "defaultEnabled": false,
+    "defaultOptions": {}
   }
 }
