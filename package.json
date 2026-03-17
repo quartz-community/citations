@@ -44,9 +44,7 @@
   },
   "peerDependencies": {
     "@jackyzha0/quartz": "^4.5.2",
-    "preact": "^10.0.0",
-    "rehype-citation": "^2.2.2",
-    "unist-util-visit": "^5.0.0"
+    "preact": "^10.0.0"
   },
   "peerDependenciesMeta": {
     "@jackyzha0/quartz": {
@@ -54,12 +52,6 @@
     },
     "preact": {
       "optional": false
-    },
-    "rehype-citation": {
-      "optional": true
-    },
-    "unist-util-visit": {
-      "optional": true
     }
   },
   "dependencies": {
