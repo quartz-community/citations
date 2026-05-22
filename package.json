@@ -86,6 +86,25 @@
     "dependencies": [],
     "defaultOrder": 85,
     "defaultEnabled": false,
-    "defaultOptions": {}
+    "defaultOptions": {
+      "bibliographyFile": "./bibliography.bib",
+      "suppressBibliography": false,
+      "linkCitations": false,
+      "csl": "apa"
+    },
+    "optionSchema": {
+      "bibliographyFile": {
+        "type": "string"
+      },
+      "suppressBibliography": {
+        "type": "boolean"
+      },
+      "linkCitations": {
+        "type": "boolean"
+      },
+      "csl": {
+        "type": "string"
+      }
+    }
   }
 }
