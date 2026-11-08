@@ -1,6 +1,6 @@
 {
   "name": "@quartz-community/citations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Citations and bibliography transformer plugin for Quartz",
   "type": "module",
   "license": "MIT",
