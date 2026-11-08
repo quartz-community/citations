@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Patch Changes
+
+- dfb3f42: Numeric citation styles (e.g. IEEE) now show the bibliography label (`[1]`) on the same line as the reference instead of on its own line (jackyzha0/quartz#2471). Author-date styles are unaffected.
+
 ## 1.0.0
 
 ### Major Changes
