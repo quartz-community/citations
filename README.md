@@ -5,15 +5,18 @@ Adds academic citation support using a BibTeX bibliography file and configurable
 ## Installation
 
 ```bash
-npx quartz plugin add github:quartz-community/citations
+npx quartz plugin add @quartz-community/citations
 ```
+
+It is already in the default `quartz.config.yaml` (disabled, `order: 85`); set `enabled: true` to turn it on.
 
 ## Usage
 
 ```yaml title="quartz.config.yaml"
 plugins:
-  - source: github:quartz-community/citations
+  - source: "@quartz-community/citations"
     enabled: true
+    order: 85
     options:
       bibliographyFile: "./bibliography.bib"
       csl: apa
@@ -32,12 +35,12 @@ ExternalPlugin.Citations({
 
 ## Configuration
 
-| Option                 | Type      | Default                | Description                                                  |
-| ---------------------- | --------- | ---------------------- | ------------------------------------------------------------ |
-| `bibliographyFile`     | `string`  | `"./bibliography.bib"` | The path to the BibTeX bibliography file.                    |
-| `suppressBibliography` | `boolean` | `false`                | Whether to suppress the bibliography at the end of the page. |
-| `linkCitations`        | `boolean` | `false`                | Whether to link citations to the bibliography.               |
-| `csl`                  | `string`  | `"apa"`                | The CSL style to use for citations.                          |
+| Option                 | Type      | Default                | Description                                                                                                            |
+| ---------------------- | --------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `bibliographyFile`     | `string`  | `"./bibliography.bib"` | The path to the BibTeX bibliography file, relative to the root of your Quartz repository.                              |
+| `suppressBibliography` | `boolean` | `false`                | Whether to suppress the bibliography at the end of the page.                                                           |
+| `linkCitations`        | `boolean` | `false`                | Whether to link citations to the bibliography.                                                                         |
+| `csl`                  | `string`  | `"apa"`                | The CSL style to use for citations. See [rehype-citation](https://rehype-citation.netlify.app/custom-csl) for options. |
 
 ## Documentation
 
